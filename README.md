@@ -1,6 +1,6 @@
 # Truckload Trip Companion
 
-[Open the public app](https://lavender333.github.io/sagisolar/dist/)
+[Open the public app](https://lavender333.github.io/truckload/dist/)
 
 Mobile-responsive trucking trip estimator with local fuel-statement import.
 
