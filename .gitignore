@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+node_modules/
+private-data/
+*.xlsx
+*.xls
+*.zip
+.openai/

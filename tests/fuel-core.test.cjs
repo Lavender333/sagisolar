@@ -1,0 +1,8 @@
+const assert=require('node:assert/strict');const f=require('../dist/fuel-core.js');
+const csv='\ufeffDate,Station,Gallons,Total,ID,Currency,Product\r\n2026-10-15,"Stop, One",100,350,tx1,USD,Diesel\r\n10/16/2026,"Stop ""Two""",50,180,tx2,USD,ULSD\r\n';
+const p=f.parseCSV(csv),m={date:0,station:1,gallons:2,total:3,id:4,currency:5,product:6};assert.equal(p.rows[0][1],'Stop, One');assert.equal(p.rows[1][1],'Stop "Two"');const r=f.review(p,m,'WEX',[]);assert.equal(r.valid.length,2);assert.equal(f.totals(r.valid).total,530);assert.equal(f.totals(r.valid).gallons,150);assert.equal(f.review(p,m,'WEX',r.valid).duplicates.length,2);assert.equal(f.dateOnly('02/30/2026'),null);assert.equal(f.dateOnly('2026-02-28'),'2026-02-28');assert.throws(()=>f.parseCSV('Date,Station\n2026-01-01,"oops'));assert.equal(f.numeric(''),NaN);assert.equal(f.numeric('$1,200.50'),1200.50);
+for(const row of [['2026-10-15','Stop','-2','-7','a','USD','Diesel'],['2026-10-15','Stop','2','7','b','CAD','Diesel'],['2026-10-15','Stop','2','7','c','USD','DEF'],['2026-10-15','Stop','0','7','d','USD','Diesel']])assert.ok(f.normalize(row,p.header,m,'WEX').error);
+assert.equal(f.normalize(['2026-10-15','Stop','10','3.5','a','USD','Diesel'],p.header,{...m,total:'',price:3},'WEX').value.total,35);
+assert.equal(f.review({header:p.header,rows:[p.rows[0],p.rows[0]]},m,'WEX',[]).duplicates.length,1);assert.ok(f.normalize(['bad'],p.header,m,'WEX').error);console.log('PASS: quoted CSV, escaped quotes, date validation, totals, price-derived amount, duplicates, currencies, fuel type, negative credits and malformed rows.');
+
+assert.ok(f.normalize(['2026-10-15','Stop','10','-35','a','USD','Diesel'],p.header,{...m,price:2},'WEX').error);
