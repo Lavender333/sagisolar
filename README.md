@@ -1,4 +1,4 @@
-# SagiSolar Trip Companion
+# Truckload Trip Companion
 
 [Open the public app](https://lavender333.github.io/sagisolar/dist/)
 
