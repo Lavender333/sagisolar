@@ -1,8 +1,5 @@
 # SagiSolar Trip Companion
 
-[Open the live app](https://sagisolar-trip-companion.antoinette-w-0270.chatgpt.site)
-
-
 Mobile-responsive trucking trip estimator with local fuel-statement import.
 
 ## Working features
@@ -23,7 +20,7 @@ The source is ready for a **new** public GitHub repository. Do not copy the priv
 
 ## Run
 
-Serve the `dist` directory with any static web server (for example, `python -m http.server 8000 --directory dist`) and open its local address. No package install or build is required. For GitHub Pages, deploy the contents of `dist` as the static artifact. GitHub Pages can host this browser-local edition; it cannot hold private provider API secrets.
+Serve the `dist` directory with any static web server (for example, `python -m http.server 8000 --directory dist`) and open its local address. No package install or build is required. For GitHub Pages, select main and / (root); the root entry redirects to dist/. GitHub Pages can host this browser-local edition; it cannot hold private provider API secrets.
 
 ## Test
 
@@ -45,6 +42,6 @@ Historical paid prices are not current quotes. Fuel purchased on a trip may be c
 
 PDF, JPEG, PNG and WebP rate confirmations can be attached to estimates. Files are validated by signature, limited to 10 MB each and 50 MB total, and stored in IndexedDB on the current browser. They are not sent to a server. Users can open/download originals, review suggested fields, link to a saved estimate or delete a document. Removing a document detaches it without deleting the estimate. Reusing a historical trip does not carry its rate confirmation onto a different load.
 
-Text PDF extraction uses vendored Mozilla PDF.js 5.6.205 (Apache-2.0; license in dist/vendor/pdfjs-LICENSE), reading at most 20 pages and 100,000 characters. Simple labeled fields are suggested; competing values are left blank. Review is required before applying fields. Scanned PDFs and images require manual detail entry; OCR and AI document interpretation are not implemented. Password-protected or unreadable PDFs remain attachable. Documents and links do not sync across devices. Keep original copies outside the app.
+Text PDF extraction uses vendored Mozilla PDF.js 5.6.205 (Apache-2.0; license in dist/vendor/pdfjs-LICENSE), reading at most 20 pages and 100,000 characters. Simple labeled fields are suggested; competing values are left blank. Review is required before applying fields. Scanned PDFs and images use Tesseract.js 7 English OCR, up to six scanned pages per file. Engine and English language resources download on first use from jsDelivr and Project Naptha; document contents remain on-device. A progress indicator, cancellation and Rescan button are available. OCR is imperfect; review suggested fields before applying. Tabular pickup/delivery stops and adjacent mileage/weight columns are supported. Password-protected or unreadable PDFs remain attachable. Documents and links do not sync across devices. Keep original copies outside the app.
 
 Run `node tests/ratecon-core.test.cjs` for field extraction and file signature checks.
