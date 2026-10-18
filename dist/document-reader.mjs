@@ -5,6 +5,13 @@ export function textFromItems(items){
  for(const item of items){if(!item.str?.trim()||!item.transform)continue;const y=item.transform[5],x=item.transform[4];let line=lines.find(l=>Math.abs(l.y-y)<3);if(!line){line={y,items:[]};lines.push(line)}line.items.push({x,text:item.str});}
  return lines.sort((a,b)=>b.y-a.y).map(l=>l.items.sort((a,b)=>a.x-b.x).map(i=>i.text).join(' ')).join('\n');
 }
+// Safari can read streams with getReader() but lacks their async iterator.
+// Avoid PDF.js getTextContent(), which uses `for await` on that stream.
+export async function pageTextContent(page,signal){
+ const reader=page.streamTextContent().getReader();const items=[];
+ try{while(true){const {done,value}=await deadline(reader.read(),30000,signal);if(done)break;if(value?.items)items.push(...value.items);}return {items};}
+ finally{try{await reader.cancel()}catch{}reader.releaseLock();}
+}
 function deadline(promise,ms,signal){return new Promise((resolve,reject)=>{let done=false;const finish=(f,v)=>{if(done)return;done=true;clearTimeout(timer);signal?.removeEventListener('abort',abort);f(v)};const abort=()=>finish(reject,new Error('Reading cancelled. Your original file is still saved.'));const timer=setTimeout(()=>finish(reject,new Error('Reading timed out. Try a smaller or clearer file.')),ms);signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();promise.then(v=>finish(resolve,v),e=>finish(reject,e));});}
 async function loadOCR(){if(globalThis.Tesseract)return globalThis.Tesseract;await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=asset('./vendor/tesseract.min.js');script.onload=resolve;script.onerror=()=>{script.remove();reject(Error('OCR reader could not load. Check your connection and retry.'))};document.head.appendChild(script)});return globalThis.Tesseract;}
 export async function readDocument(bytes,type,options={}){
@@ -16,7 +23,7 @@ export async function readDocument(bytes,type,options={}){
   if(type==='application/pdf'){
    const lib=options.pdfLib||await import('./vendor/pdf.min.mjs');if(!options.pdfLib)lib.GlobalWorkerOptions.workerSrc=asset('./vendor/pdf.worker.min.mjs');
    loadingTask=lib.getDocument({data:new Uint8Array(bytes),isEvalSupported:false,useSystemFonts:true});const pdf=await deadline(loadingTask.promise,30000,signal);const pages=Math.min(pdf.numPages,20);if(pdf.numPages>pages)notes.push(`Only ${pages} of ${pdf.numPages} pages were read.`);
-   for(let i=1;i<=pages;i++){check();onProgress(`Reading page ${i} of ${pages}…`);const page=await pdf.getPage(i);const content=await deadline(page.getTextContent(),30000,signal);let pageText=textFromItems(content.items);
+   for(let i=1;i<=pages;i++){check();onProgress(`Reading page ${i} of ${pages}…`);const page=await pdf.getPage(i);const content=await pageTextContent(page,signal);let pageText=textFromItems(content.items);
     if(forceOCR||pageText.trim().length<100){if(ocrPages>=6){notes.push(`Page ${i} needs scanning; the six scanned-page limit was reached.`);}else{ocrPages++;onProgress(`Scanning page ${i} of ${pages}…`);const base=page.getViewport({scale:1}),scale=Math.min(2.5,2200/Math.max(base.width,base.height)),viewport=page.getViewport({scale});const canvas=options.createCanvas?options.createCanvas(Math.ceil(viewport.width),Math.ceil(viewport.height)):Object.assign(document.createElement('canvas'),{width:Math.ceil(viewport.width),height:Math.ceil(viewport.height)});await deadline(page.render({canvasContext:canvas.getContext('2d'),viewport}).promise,30000,signal);const image=options.canvasImage?options.canvasImage(canvas):canvas;pageText=await recognize(image);canvas.width=1;canvas.height=1;}}
     text+=pageText+'\n';options.onPage?.(text,i,pages);page.cleanup();if(text.length>100000){text=text.slice(0,100000);notes.push('Long text was truncated at 100,000 characters.');break;}
    }
