@@ -6,7 +6,7 @@ Mobile-responsive trucking trip estimator with local fuel-statement import.
 
 ## Working features
 
-- Check numbers first: target earnings per total mile, diesel consumption, driver pay, SST/ART, dispatch/factoring, tolls, weight scale, reefer fuel, parking and DEF.
+- Check numbers first: target earnings per total mile, diesel consumption, driver pay, company percentage, dispatch/factoring, tolls, weight scale, reefer fuel, parking and DEF.
 - Lumper amount can remain unknown while planning. Record company, driver or broker payment and explicitly choose whether to deduct it. Unknown charges are excluded with a visible pending notice. Completed trips require a resolved lumper amount/payer or no lumper needed.
 - Separate monthly business budgets for insurance, truck note, tags and other recurring costs, with effective dates and editing.
 - Weekly Monday–Sunday dashboard uses entered completion dates and validated final trip costs. Saved estimates and undated older records do not count as earnings. Business budgets allocate by calendar days in each month, separate from trip expenses.
