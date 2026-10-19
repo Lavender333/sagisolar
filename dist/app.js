@@ -3,7 +3,7 @@ const defaults={mpg:6.5,driver:0,art:0,dispatch:0,factoring:0,target:1};
 function read(k,f){try{return JSON.parse(localStorage.getItem(k))||f}catch{return f}}let profile={...defaults,...read('sagi-profile',{})},saved=read('sagi-trips',[]),last=null;
 function persist(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch{toast('Storage unavailable. Export your estimate before leaving.');return false}}
 function toast(s){$('toast').textContent=s;$('toast').style.display='block';setTimeout(()=>$('toast').style.display='none',3500)}
-function tab(id){document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==id);document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));if(id==='saved')renderSaved();if(id==='dashboard')renderDashboard();if(id==='business')renderBusiness();if(id==='connections'&&window.renderFuel)window.renderFuel();if(id==='ratecons'&&window.renderRatecons)window.renderRatecons();window.scrollTo({top:0,behavior:'smooth'})}
+function tab(id){document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!==id);document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));if(id==='saved')renderSaved();if(id==='dashboard')renderDashboard();if(id==='business')renderBusiness();if(id==='connections'&&window.renderFuel)window.renderFuel();window.scrollTo({top:0,behavior:'smooth'})}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>tab(b.dataset.go));
 const fields=[['mpg','Fuel economy (miles / US gallon)',0.1],['driver','Driver pay ($/mile)',0],['art','Company %',0],['dispatch','Dispatch (%)',0],['factoring','Factoring (%)',0]];
 $('settingFields').innerHTML=fields.map(([id,label,min])=>`<label>${label}<input id="s_${id}" type="number" min="${min}" step="0.01" value="${profile[id]}" required></label>`).join('');
@@ -16,3 +16,6 @@ $('result').innerHTML=`<span class="eyebrow">ESTIMATED EARNINGS THIS TRIP</span>
 $('tripForm').onsubmit=e=>{e.preventDefault();calculate();if(innerWidth<790)$('result').scrollIntoView({behavior:'smooth',block:'center'})};$('tripForm').oninput=()=>{if(last)calculate()};
 $('lumperPayer').onchange=()=>{const payer=$('lumperPayer').value;$('lumperDeduct').checked=payer==='driver';if(payer==='none')$('lumper').value='0';if(last)calculate()};
 $('example').onclick=()=>{$('tripForm').reset();window.setActiveRatecon?.(null);Object.entries({origin:'Crossville, TN',destination:'Lakeland, FL',pay:2200,miles:700,deadhead:50,days:2,price:3.50,tolls:25,scale:20}).forEach(([k,v])=>$(k).value=v);calculate();toast('Sample load loaded. Review your assumptions.');};
+
+function openUploads(){tab('plan');$('uploadPanel').open=true;window.renderRatecons?.();$('uploadPanel').scrollIntoView({behavior:'smooth',block:'start'});}
+$('openUpload').onclick=openUploads;
