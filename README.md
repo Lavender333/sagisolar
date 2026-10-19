@@ -6,19 +6,21 @@ Mobile-responsive trucking trip estimator with local fuel-statement import.
 
 ## Working features
 
-- Load cost estimates include empty miles, fuel consumption, maintenance, driver pay, daily overhead, tolls, trip fees and percentage deductions.
-- Break-even and target load pay account for percentage deductions.
-- Reusable truck settings, saved estimates and CSV export.
-- CSV/TSV fuel statement import with column mapping, explicit USD/US gallon confirmation, review, duplicate detection and invalid-row reporting.
-- Imported fuel purchase totals and weighted paid fuel price; purchases can be assigned to saved estimates.
-- Final payment, consumed fuel cost and other final costs can be entered to compare final earnings with the estimate.
-- Fuel-stop comparison includes manually entered discounts, eligible refundable taxes and detour cost.
+- Check numbers first: target earnings per total mile, diesel consumption, driver pay, SST/ART, dispatch/factoring, tolls, weight scale, reefer fuel, parking and DEF.
+- Lumper amount can remain unknown while planning. Record company, driver or broker payment and explicitly choose whether to deduct it. Unknown charges are excluded with a visible pending notice. Completed trips require a resolved lumper amount/payer or no lumper needed.
+- Separate monthly business budgets for insurance, truck note, tags and other recurring costs, with effective dates and editing.
+- Weekly Monday–Sunday dashboard uses entered completion dates and validated final trip costs. Saved estimates and undated older records do not count as earnings. Business budgets allocate by calendar days in each month, separate from trip expenses.
+- Manual diesel/DEF purchases, diesel spreadsheet import (.csv/.tsv), weighted diesel price, trip linking, individual purchase deletion and exports.
+- Save, reuse and delete trips; enter/edit final costs including diesel/DEF gallons consumed, lumper and separate expenses. Export trip and weekly spreadsheets.
+- PDF/photo rate confirmations with review, field suggestions, original document access, rescanning and deletion.
+
+Maintenance reserve and fixed daily overhead are no longer included in new estimates. Old saved estimate values remain unchanged and labeled as earlier estimates. Legacy storage keys preserve existing device data. No saved-routes or fuel-comparison navigation remains.
 
 ## Data boundaries
 
 This package contains no customer trip history, account credentials or private repository history. `dist/history.json` is intentionally empty. Fuel statements are parsed in the browser; only selected fields are retained in browser localStorage. Raw statement data, unmapped columns and card numbers are not intentionally saved or uploaded. Users should not map card numbers to transaction IDs. Local data is not encrypted and is scoped to the browser, not to an individual signed-in driver. Do not use this edition on shared devices for separate driver accounts without a proper authenticated storage backend.
 
-The source is ready for a **new** public GitHub repository. Do not copy the private deployment repository's `.git` directory, `.openai` directory, workbook or historical data. No license is granted by this README; the owner should choose a license before inviting outside reuse.
+This is the public GitHub source. Do not copy the private deployment repository's `.git` directory, `.openai` directory, workbook or historical data. No license is granted by this README; the owner should choose a license before inviting outside reuse.
 
 ## Run
 
@@ -30,7 +32,7 @@ Run `node tests/trip-math.test.cjs`, `node tests/fuel-core.test.cjs` and syntax 
 
 ## Not yet connected
 
-No fuel provider API, live fuel prices, truck routing, toll API, automatic background refresh, cloud driver accounts or bank account connection is implemented. Selecting a fuel provider records a preference only. It does not connect an account. CSV import works without those integrations.
+No fuel provider API, live fuel prices, truck routing, toll API, automatic background refresh, cloud driver accounts or bank account connection is implemented. Selecting a fuel provider records a preference only. It does not connect an account. Spreadsheet import works without those integrations. Receipt-photo reading for fuel purchases is planned, not implemented; enter receipt details manually.
 
 Direct syncing requires the selected provider's supported API, commercial access if required, authentication documentation and approved credentials. Implement it in a secure backend, not in this static bundle. Do not collect drivers' provider passwords in browser forms or commit secrets to GitHub.
 
@@ -42,8 +44,16 @@ Historical paid prices are not current quotes. Fuel purchased on a trip may be c
 
 ## Rate confirmation uploads
 
-PDF, JPEG, PNG and WebP rate confirmations can be attached to estimates. Files are validated by signature, limited to 10 MB each and 50 MB total, and stored in IndexedDB on the current browser. They are not sent to a server. Users can open/download originals, review suggested fields, link to a saved estimate or delete a document. Removing a document detaches it without deleting the estimate. Reusing a historical trip does not carry its rate confirmation onto a different load.
+PDF, JPEG, PNG and WebP rate confirmations can be attached to estimates. Files are validated by signature, limited to 10 MB each and 50 MB total, and stored in IndexedDB on the current browser. They are not sent to a server. Users can open/download originals, review suggested fields, link to a saved estimate or delete a document. Removing a document detaches it without deleting the estimate. Reusing a saved trip does not carry its rate confirmation onto a different load.
 
 Text PDF extraction uses vendored Mozilla PDF.js 5.6.205 (Apache-2.0; license in dist/vendor/pdfjs-LICENSE), reading at most 20 pages and 100,000 characters. Simple labeled fields are suggested; competing values are left blank. Review is required before applying fields. Scanned PDFs and images use Tesseract.js 7 English OCR, up to six scanned pages per file. Engine and English language resources download on first use from jsDelivr and Project Naptha; document contents remain on-device. A progress indicator, cancellation and Rescan button are available. OCR is imperfect; review suggested fields before applying. Tabular pickup/delivery stops and adjacent mileage/weight columns are supported. Password-protected or unreadable PDFs remain attachable. Documents and links do not sync across devices. Keep original copies outside the app.
 
 Run `node tests/ratecon-core.test.cjs` for field extraction and file signature checks.
+
+## Accounting behavior and verification
+
+Estimated trip expenses = consumed diesel + driver pay + tolls + scale + reefer fuel + parking + DEF + lumper borne by the user + percentage deductions on gross load payment. Business budgets are not part of that estimate. Target load payment divides fixed trip expenses plus desired earnings by one minus the combined deduction rate; displayed required payment rounds upward to the next cent. Actual final expenses use entered consumed fuel and expense amounts, not linked purchase totals. Reimbursements should not be counted both in final payment and as excluded costs. Enter amounts consistently to avoid double counting.
+
+Monthly budgets apply from their effective date and are divided by the calendar days in each applicable month, including leap years. Weekly business allocation includes all seven days, even when no trip completes. Editing the same effective date replaces that budget; creating a later effective date retains earlier periods. These are budget allocations, not recorded bill payments. Data remains device-local; exports do not constitute a complete backup of documents and settings.
+
+Run all core checks: `node tests/trip-math.test.cjs`, `node tests/fuel-core.test.cjs`, `node tests/ratecon-core.test.cjs`, `node tests/review-fields.test.cjs`, `node tests/safari-stream.test.mjs` and `node tests/ui-wiring.test.cjs`.
