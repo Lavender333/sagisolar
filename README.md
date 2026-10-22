@@ -24,6 +24,12 @@ This is the public GitHub source. Do not copy the private deployment repository'
 
 ## Run
 
+October 22 updates: forms stack on mobile across all six tabs, including document review and final costs. Fuel purchases have Diesel/DEF buttons and a per-gallon price that calculates the total. Truck settings retain company, dispatch and factoring percentages for every estimate and support driver pay per mile or as a percentage of gross load pay. Combined percentage deductions must remain below 100%.
+
+Earnings now accept an inclusive start/end date range and display gross and net. Monthly business budgets include fees, maintenance, repairs and meals; dated one-time expenses are deducted in their selected range. Do not enter the same expense in both a budget and a dated entry. Existing saved budgets default the new categories to zero. Reviewed rate-confirmation details populate the trip and immediately calculate an estimate when required fields are valid.
+
+Run `node --test tests/*test.cjs tests/*test.mjs` for automated checks. Optional layout checks require Playwright with Chromium and WebKit installed, a server on port 8017 serving dist, and `node tests/mobile-browser.cjs`. Browser installation was unavailable in the implementation environment; this browser check has not yet been run successfully.
+
 Serve the `dist` directory with any static web server (for example, `python -m http.server 8000 --directory dist`) and open its local address. No package install or build is required. For GitHub Pages, select main and / (root); the root entry redirects to dist/. GitHub Pages can host this browser-local edition; it cannot hold private provider API secrets.
 
 ## Test

@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict'),core=require('../dist/trip-core');
+const t={pay:2000,miles:600,deadhead:0,days:1,price:3,target:1,defGallons:0,tolls:0,scale:0,reefer:0,parking:0,defCost:0,lumperPayer:'none'};
+const p={mpg:6,driver:20,driverMode:'percent',art:10,dispatch:5,factoring:2};
+const r=core.estimate(t,p);
+assert.equal(r.driver,400);assert.equal(r.deductions,340);assert.equal(r.cost,1040);assert.equal(r.net,960);
+assert(Math.abs(core.estimate({...t,pay:r.targetRate},p).net-600)<1e-8);
+assert.throws(()=>core.estimate(t,{...p,driver:83}));
+const b={from:'2026-10-01',insurance:310,truckNote:0,tags:0,other:0,fees:31,maintenance:62,repairs:0,meals:0};
+const w=core.weekly([], [b], '2026-10-10','2026-10-12');
+assert.equal(w.days.length,3);assert.equal(w.business,39);assert.equal(w.net,-39);
+assert.throws(()=>core.weekly([],[],'2026-10-12','2026-10-10'));
+console.log('PASS: percentage driver pay, combined deductions, earnings target, custom dates and extended budgets');

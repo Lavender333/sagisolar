@@ -12,3 +12,23 @@ h1,h2,h3{font-family:'Barlow Condensed','Arial Narrow',sans-serif;font-weight:70
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 
 .target-question{padding:18px;background:#fff5dd;border:1px solid #d5a644;border-radius:12px;margin-bottom:20px;font-size:1.15rem}.target-question small{font-size:.85rem}.target-question input{max-width:200px}.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}.dashboard-grid .card{margin:0}.dashboard-grid h2{margin-bottom:0}.actual-status{color:#a52e1c}.trip-card details{margin:16px 0}.purchase-metrics{flex-wrap:wrap}#businessHistory .card{margin-top:16px}#weekDate{max-width:260px}
+.layout{grid-template-columns:238px minmax(0,1fr)}
+.columns{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
+.grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:end}
+.grid>*,.columns>*,.card,.trip-card,.result,.page,form,details{min-width:0}
+input,select,textarea{max-width:100%;min-width:0;width:100%;box-sizing:border-box}
+input[type=date],input[type=datetime-local]{appearance:none;-webkit-appearance:none;min-width:0}
+input::-webkit-date-and-time-value{text-align:left;min-height:1.5em}
+.card-title,.transaction header,.lane{flex-wrap:wrap}
+.card-title>*,.transaction header>*,.lane>*{min-width:0}
+.pill{white-space:normal}
+.row>span,.document-title,.trip-card p,.note{overflow-wrap:anywhere}
+.row>b{flex-shrink:0}
+.actions>button,button.primary{max-width:100%;white-space:normal}
+.product-choice{margin-bottom:17px;font-size:14px;font-weight:600}
+.product-choice .actions{margin-top:6px}
+[data-product][aria-pressed=true]{background:var(--amber);color:var(--ink)}
+#toast{max-width:calc(100vw - 32px);overflow-wrap:anywhere}
+@media(max-width:1100px){.columns{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:790px){.layout{display:block}.grid{grid-template-columns:minmax(0,1fr)}.card,.trip-card,.result{padding:18px}.card .card{padding:14px}.card-title{align-items:flex-start}.dashboard-grid{grid-template-columns:minmax(0,1fr)}main{padding:22px 4%}.upload-zone{padding:14px}footer{flex-wrap:wrap}input,select{font-size:16px}.amount{font-size:clamp(30px,9vw,49px)}.metrics{grid-template-columns:minmax(0,1fr)}}
+#weekDate{max-width:100%}
