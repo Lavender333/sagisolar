@@ -5,7 +5,7 @@ for(const engine of [chromium,webkit]){
  const browser=await engine.launch({headless:true});
  const page=await browser.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('http://127.0.0.1:8017');
- await page.click('#example');await page.click('#saveTrip');
+ await page.fill('#origin','Atlanta');await page.fill('#destination','Orlando');await page.fill('#pay','2000');await page.fill('#miles','400');await page.click('#tripForm button[type="submit"]');await page.click('#saveTrip');
  for(const width of [320,375,390,430,768,1024,1440]){
   await page.setViewportSize({width,height:900});
   for(const tab of ['plan','connections','saved','dashboard','settings','business']){
